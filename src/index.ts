@@ -136,6 +136,75 @@ export default Canister({
         }
         return Ok(deletedMessage.Some);
     }),
+
+    /**
+     * Retrieve all students by course.
+     * @param course - Course of the student.
+     * @returns a Result containing a vector of students or an error if no students found.
+     */
+
+    getStudentsByCourse: query([text], Result(Vec(Student), Errors), (course) => {
+        const allStudents = students.values();
+
+        // You can handle the case where there are no students found
+        if (allStudents.length === 0) {
+            return Err({ UserDoesNotExist: 'No students found' });
+        }
+
+        const studentsByCourse = allStudents.filter((student: typeof Student) => student.course === course);
+
+        return Ok(studentsByCourse);
+    }),
+
+    /**
+     * search for students by name.
+     * @param name - name of the student.
+     * @returns a Result containing a vector of students or an error if no students found.
+     */
+
+    searchStudentsByName: query([text], Result(Vec(Student), Errors), (name) => {
+        const allStudents = students.values();
+
+        // You can handle the case where there are no students found
+        if (allStudents.length === 0) {
+            return Err({ UserDoesNotExist: 'No students found' });
+        }
+
+        const studentsByName = allStudents.filter((student: typeof Student) => student.name === name);
+
+        return Ok(studentsByName);
+    }),
+
+    /**
+     * sort students by different categories.
+     * @param category - category to sort by.
+     * @returns a Result containing a vector of students or an error if no students found.
+     */
+
+    sortStudents: query([text], Result(Vec(Student), Errors), (category) => {
+        const allStudents = students.values();
+
+        // You can handle the case where there are no students found
+        if (allStudents.length === 0) {
+            return Err({ UserDoesNotExist: 'No students found' });
+        }
+
+        const studentsByCategory = allStudents.sort((a: typeof Student, b: typeof Student) => {
+            if (category === "name") {
+                return a.name.localeCompare(b.name);
+            } else if (category === "course") {
+                return a.course.localeCompare(b.course);
+            } else if (category === "level") {
+                return a.level - b.level;
+            } else if (category === "cgpa") {
+                return a.cgpa - b.cgpa;
+            } else {
+                return a.createdAt - b.createdAt;
+            }
+        });
+
+        return Ok(studentsByCategory);
+    }),
 });
 
 // a workaround to make uuid package work with Azle

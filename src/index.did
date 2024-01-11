@@ -1,6 +1,6 @@
 service: () -> {
     createStudent: (text, text, nat64, nat64) -> (variant {Ok:record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}});
-    deleteMessage: (text) -> (variant {Ok:record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}});
+    deleteStudentRecord: (text) -> (variant {Ok:record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}});
     getAllStudents: () -> (variant {Ok:vec record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}}) query;
     getStudentById: (text) -> (variant {Ok:record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}}) query;
     updateStudent: (text, record {cgpa:nat64; name:text; level:nat64; course:text}) -> (variant {Ok:record {id:text; cgpa:nat64; name:text; createdAt:nat64; level:nat64; course:text; lecturerId:principal}; Err:variant {WorkoutDoesNotExist:text; UserDoesNotExist:text; CourseDoesNotExist:text}});
