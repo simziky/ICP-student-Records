@@ -25,6 +25,11 @@ const StudentPayload = Record({
     cgpa: nat64,
 });
 
+//Deffine the payload for updating the CGPA
+const CgpaPayload = Record({
+    cgpa: nat64, 
+});
+
 // Define possible error variants
 const Errors = Variant({
     UserDoesNotExist: text,
@@ -135,6 +140,62 @@ export default Canister({
         }
         return Ok(deletedMessage.Some);
     }),
+
+    // Update the grade of a student identified by ID
+updateGrade: update([text, CgpaPayload], Result(Student, Errors), async (id, payload) => {
+    // Retrieve the student record by ID from the students map
+    const studentOpt = students.get(id);
+
+    // Check if the student exists
+    if ("None" in studentOpt) {
+        // Return an error if the student is not found
+        return Err({ UserDoesNotExist: `Couldn't update a student with id=${id}. Student not found` });
+    }
+
+    // Extract the existing student data
+    const student = studentOpt.Some;
+
+    // Create an updated student record with new payload and updated timestamp
+    const updatedGrade: typeof Student = {
+        ...student,
+        ...payload,
+        updatedAt: Some(ic.time())
+    };
+
+    // Update the student record in the students map
+    students.insert(updatedGrade.id, updatedGrade);
+
+    // Return the updated student record
+    return Ok(updatedGrade);
+}),
+
+// Get the top-performing students based on CGPA
+getTopStudents: query([nat64], Result(Vec(Student), Errors), (count: nat64) => {
+    // Retrieve all student records from the students map
+    const allStudents = students.values();
+
+    // Sort students by CGPA in descending order
+    const sortedStudents = allStudents.sort((a: { cgpa: any; }, b: { cgpa: any; }) => {
+        // Convert nat64 (BigInt) to number for comparison
+        const cgpaA = Number(a.cgpa);
+        const cgpaB = Number(b.cgpa);
+
+        // Sort in descending order based on CGPA
+        return cgpaB - cgpaA;
+    });
+
+    // Take the top N students based on the count parameter
+    const topStudents = sortedStudents.slice(0, Number(count));
+
+    // Handle the case where there are no top-performing students found
+    if (topStudents.length === 0) {
+        return Err({ UserDoesNotExist: 'No top-performing students found' });
+    }
+
+    // Return the top-performing students
+    return Ok(topStudents);
+}),
+
 });
 
 // a workaround to make uuid package work with Azle
