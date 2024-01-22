@@ -10,9 +10,9 @@ const COURSE_TYPES = ["accounting", "information tech", "medicine", "engineer", 
 const Student = Record({
     id: text,
     name: text,
-    course: text,  
-    level: nat64,  
-    cgpa: nat64,   
+    course: text,
+    level: nat64,
+    cgpa: nat64,
     createdAt: nat64,
     lecturerId: Principal
 });
@@ -20,15 +20,15 @@ const Student = Record({
 // Define the payload for updating a Student
 const StudentPayload = Record({
     name: text,
-    course: text,  
-    level: nat64,  
+    course: text,
+    level: nat64,
     cgpa: nat64,
 });
 
 // Define possible error variants
 const Errors = Variant({
     UserDoesNotExist: text,
-    CourseDoesNotExist: text 
+    CourseDoesNotExist: text
 });
 
 // Initialize a stable BTreeMap to store Student records
@@ -44,12 +44,12 @@ export default Canister({
     */
     createStudent: update([text, text, nat64, nat64], Result(Student, Errors), async (name, course, level, cgpa) => {
         const id = uuidv4();
-    
+
         // Validate the course type
         if (!COURSE_TYPES.includes(course.toLowerCase())) {
             return Err({ CourseDoesNotExist: `'${course}' is not a viable course, please select one of: ${COURSE_TYPES}` });
         }
-    
+
         const user: typeof Student = {
             id,
             name,
@@ -59,24 +59,24 @@ export default Canister({
             createdAt: ic.time(),
             lecturerId: ic.caller()
         };
-    
+
         students.insert(user.id, user);
-    
+
         return Ok(user);
     }),
-    
+
     /**
      * Retrieve all students.
      * @returns a Result containing a vector of students or an error if no students found.
      */
     getAllStudents: query([], Result(Vec(Student), Errors), () => {
         const allStudents = students.values();
-    
+
         // You can handle the case where there are no students found
         if (allStudents.length === 0) {
             return Err({ UserDoesNotExist: 'No students found' });
         }
-    
+
         return Ok(allStudents);
     }),
 
@@ -92,23 +92,23 @@ export default Canister({
             return Err({ UserDoesNotExist: `couldn't update a student with id=${id}. Student not found` });
         }
         const student = studentOpt.Some;
-    
+
         // Validate the course type
         if (payload.course && !COURSE_TYPES.includes(payload.course.toLowerCase())) {
             return Err({ CourseDoesNotExist: `'${payload.course}' is not a viable course, please select one of: ${COURSE_TYPES}` });
         }
-    
+
         const updatedStudent: typeof Student = {
             ...student,
             ...payload,
             updatedAt: Some(ic.time())
         };
-    
+
         students.insert(updatedStudent.id, updatedStudent);
-    
+
         return Ok(updatedStudent);
     }),
-    
+
     /**
      * Retrieve a student record by ID.
      * @param id - ID of the student.
@@ -137,7 +137,7 @@ export default Canister({
     }),
 });
 
-// A workaround to make uuid package work with Azle
+// a workaround to make uuid package work with Azle
 globalThis.crypto = {
     // @ts-ignore
     getRandomValues: () => {
@@ -148,5 +148,5 @@ globalThis.crypto = {
         }
 
         return array;
-    }
+    },
 };
