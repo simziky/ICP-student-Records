@@ -6,4 +6,6 @@ The project is a student record that allows an admin or lecturer <br/> to create
 2 get all student records  <br/>
 3 delete student records  <br/>
 4 update record  <br/>
-5 get record by ID
+5 get record by ID <br/>
+6 Update students CGPA using their unique id <br/>
+7 Get a list of the top perorming students according to their CGPA.<br/>(the count parameter is used to return the specific number of students in a descending order)
