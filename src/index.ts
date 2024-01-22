@@ -27,7 +27,6 @@ const StudentPayload = Record({
 
 // Define possible error variants
 const Errors = Variant({
-    WorkoutDoesNotExist: text,
     UserDoesNotExist: text,
     CourseDoesNotExist: text 
 });
@@ -144,4 +143,10 @@ globalThis.crypto = {
     getRandomValues: () => {
         let array = new Uint8Array(32);
 
-        for (let i = 0; i < array.length; i
+        for (let i = 0; i < array.length; i++) {
+            array[i] = Math.floor(Math.random() * 256);
+        }
+
+        return array;
+    }
+};
